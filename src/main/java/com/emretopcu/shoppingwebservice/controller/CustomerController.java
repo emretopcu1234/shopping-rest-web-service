@@ -61,7 +61,8 @@ public class CustomerController {
 	
 	@PostMapping("/customers")
 	public ResponseEntity<Object> addCustomer(@Valid @RequestBody Customer customer) {
-		if(customerRepository.addCustomer(customer) == null) {
+		Customer newCustomer = customerRepository.addCustomer(customer);
+		if(newCustomer == null) {
 			throw new ResourceWithDuplicateIdException("There already exists a customer with id: " + customer.getId());
 		}
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(customer.getId()).toUri();
