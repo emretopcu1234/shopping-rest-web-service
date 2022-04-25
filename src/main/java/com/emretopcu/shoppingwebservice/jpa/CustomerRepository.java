@@ -1,9 +1,11 @@
 package com.emretopcu.shoppingwebservice.jpa;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +20,11 @@ public class CustomerRepository {
 	@PersistenceContext
 	EntityManager entityManager;
 	
-	public List<Customer> retrieveAllCustomers(){
-		return entityManager.createNamedQuery("find_all_customers", Customer.class).getResultList();
+	public List<Customer> retrieveCustomers(String name, String country){
+		Query query = entityManager.createNamedQuery("retrieve_customers");
+		query.setParameter("name", name);
+		query.setParameter("country", country);
+		return (List<Customer>) query.getResultList();
 	}
 	
 	public Customer retrieveCustomerById(String id) {

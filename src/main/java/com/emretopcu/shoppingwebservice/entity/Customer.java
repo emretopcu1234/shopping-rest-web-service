@@ -8,7 +8,7 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="customer")
-@NamedQuery(name="find_all_customers", query="select c from Customer c")
+@NamedQuery(name="retrieve_customers", query="select c from Customer c where (:name IS NULL OR c.name = :name) and (:country IS NULL OR c.country = :country)")
 public class Customer {
 	
 	@Id

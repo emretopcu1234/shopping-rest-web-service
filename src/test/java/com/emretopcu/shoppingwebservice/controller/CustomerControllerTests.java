@@ -53,7 +53,7 @@ public class CustomerControllerTests {
 	public void testRetrieveAllCustomers_EmptyList() throws Exception {
 		List<Customer> customerList = new ArrayList<>();
 
-		when(customerRepository.retrieveAllCustomers()).thenReturn(customerList);
+		when(customerRepository.retrieveCustomers(null, null)).thenReturn(customerList);
 
 		mvc.perform(get("/customers"))
 			.andExpect(status().isOk())
@@ -68,7 +68,7 @@ public class CustomerControllerTests {
 		customerList.add(customer1);
 		customerList.add(customer2);
 
-		when(customerRepository.retrieveAllCustomers()).thenReturn(customerList);
+		when(customerRepository.retrieveCustomers(null, null)).thenReturn(customerList);
 
 		mvc.perform(get("/customers"))
 			.andExpect(status().isOk())
@@ -96,7 +96,7 @@ public class CustomerControllerTests {
 			.andExpect(jsonPath("$.id").value(customer.getId()))
 			.andExpect(jsonPath("$.name").value(customer.getName()))
 			.andExpect(jsonPath("$.country").value(customer.getCountry()))
-			.andExpect(jsonPath("$._links.all-customers.href").value(BASE_URL + "customers"));
+			.andExpect(jsonPath("$._links.all-customers.href").value(BASE_URL + "customers{?name,country}"));
 	}
 
 	@Test

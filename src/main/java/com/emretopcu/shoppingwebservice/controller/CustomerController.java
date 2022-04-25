@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -32,10 +34,10 @@ public class CustomerController {
 	
 	@Autowired
 	CustomerRepository customerRepository;
-
+	
 	@GetMapping("/customers")
-	public List<EntityModel<Customer>> retrieveAllCustomers() {
-		List<Customer> customerList = customerRepository.retrieveAllCustomers();
+	public List<EntityModel<Customer>> retrieveCustomers(@RequestParam(required = false) String name, @RequestParam(required = false) String country) {
+		List<Customer> customerList = customerRepository.retrieveCustomers(name, country);
 		List<EntityModel<Customer>> modelList = new ArrayList<>();
 		for(Customer customer: customerList) {
 			EntityModel<Customer> model = EntityModel.of(customer);
@@ -53,12 +55,12 @@ public class CustomerController {
 			throw new ResourceNotFoundException("Customer with id: " + id + " not found.");
 		}
 		EntityModel<Customer> model = EntityModel.of(customer);
-		WebMvcLinkBuilder linkToCustomers = linkTo(methodOn(this.getClass()).retrieveAllCustomers());
+		WebMvcLinkBuilder linkToCustomers = linkTo(methodOn(this.getClass()).retrieveCustomers(null, null));
 		model.add(linkToCustomers.withRel("all-customers"));
 		// TODO buraya ilgili customer'ın order'larının linki de eklenecek.
 		return model;
 	}
-	
+		
 	@PostMapping("/customers")
 	public ResponseEntity<Object> addCustomer(@Valid @RequestBody Customer customer) {
 		Customer newCustomer = customerRepository.addCustomer(customer);
