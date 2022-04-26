@@ -5,6 +5,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -96,7 +98,8 @@ public class CustomerControllerTests {
 			.andExpect(jsonPath("$.id").value(customer.getId()))
 			.andExpect(jsonPath("$.name").value(customer.getName()))
 			.andExpect(jsonPath("$.country").value(customer.getCountry()))
-			.andExpect(jsonPath("$._links.all-customers.href").value(BASE_URL + "customers{?name,country}"));
+			.andExpect(jsonPath("$._links.all-customers.href").value(BASE_URL + "customers{?name,country}"))
+			.andExpect(jsonPath("$._links.customer-orders.href").value(BASE_URL + "purchases?customerId=" + customer.getId() + "{&from,to}"));
 	}
 
 	@Test
@@ -140,6 +143,94 @@ public class CustomerControllerTests {
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(requestJson))
 			.andExpect(status().isNotAcceptable());
+	}
+	
+	@Test
+	public void testAddCustomer_InvalidArguments() throws Exception {
+		Customer customer = new Customer("TC0001", "Some Name", "Some Country with more than 20 characters");
+		
+		when(customerRepository.addCustomer(any())).thenReturn(customer);
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+		ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+		String requestJson = ow.writeValueAsString(customer);
+
+		mvc.perform(post("/customers")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(requestJson))
+			.andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	public void testUpdateCustomer_CustomerExists() throws Exception {
+		Customer customer = new Customer("TC0001", "Some Name", "Some Country");
+		
+		when(customerRepository.updateCustomer(any())).thenReturn(customer);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+		ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+		String requestJson = ow.writeValueAsString(customer);
+		
+		mvc.perform(put("/customers/" + customer.getId())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestJson))
+				.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testUpdateCustomer_CustomerDoesNotExist() throws Exception {
+		Customer customer = new Customer("TC0001", "Some Name", "Some Country");
+		
+		when(customerRepository.updateCustomer(any())).thenReturn(null);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+		ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+		String requestJson = ow.writeValueAsString(customer);
+		
+		mvc.perform(put("/customers/" + customer.getId())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestJson))
+				.andExpect(status().isNotFound());
+	}
+	
+	@Test
+	public void testUpdateCustomer_InvalidArguments() throws Exception {
+		Customer customer = new Customer("TC0001", "Some Name", "Some Country with more than 20 characters");
+		
+		when(customerRepository.updateCustomer(any())).thenReturn(customer);
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+		ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+		String requestJson = ow.writeValueAsString(customer);
+
+		mvc.perform(put("/customers/" + customer.getId())
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(requestJson))
+			.andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	public void testDeleteCustomer_CustomerExists() throws Exception {
+		Customer customer = new Customer("TC0001", "Some Name", "Some Country");
+		
+		when(customerRepository.deleteCustomer(any())).thenReturn(customer);
+		
+		mvc.perform(delete("/customers/" + customer.getId()))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testDeleteCustomer_CustomerDoesNotExist() throws Exception {
+		Customer customer = new Customer("TC0001", "Some Name", "Some Country");
+		
+		when(customerRepository.deleteCustomer(any())).thenReturn(null);
+		
+		mvc.perform(delete("/customers/" + customer.getId()))
+			.andExpect(status().isNotFound());
 	}
 
 

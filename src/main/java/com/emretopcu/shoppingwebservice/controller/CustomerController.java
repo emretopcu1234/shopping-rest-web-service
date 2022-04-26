@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -35,14 +34,18 @@ public class CustomerController {
 	@Autowired
 	CustomerRepository customerRepository;
 	
+	@Autowired
+	PurchaseController purchaseController;
+	
 	@GetMapping("/customers")
-	public List<EntityModel<Customer>> retrieveCustomers(@RequestParam(required = false) String name, @RequestParam(required = false) String country) {
+	public List<EntityModel<Customer>> retrieveCustomers(@RequestParam(required = false) String name,
+				@RequestParam(required = false) String country) {
 		List<Customer> customerList = customerRepository.retrieveCustomers(name, country);
 		List<EntityModel<Customer>> modelList = new ArrayList<>();
 		for(Customer customer: customerList) {
 			EntityModel<Customer> model = EntityModel.of(customer);
-			WebMvcLinkBuilder linkToCustomers = linkTo(methodOn(this.getClass()).retrieveCustomerById(customer.getId()));
-			model.add(linkToCustomers.withRel("customer-" + customer.getId()));
+			WebMvcLinkBuilder linkToSpecificCustomer = linkTo(methodOn(this.getClass()).retrieveCustomerById(customer.getId()));
+			model.add(linkToSpecificCustomer.withRel("customer-" + customer.getId()));
 			modelList.add(model);
 		}
 		return modelList;
@@ -57,7 +60,8 @@ public class CustomerController {
 		EntityModel<Customer> model = EntityModel.of(customer);
 		WebMvcLinkBuilder linkToCustomers = linkTo(methodOn(this.getClass()).retrieveCustomers(null, null));
 		model.add(linkToCustomers.withRel("all-customers"));
-		// TODO buraya ilgili customer'ın order'larının linki de eklenecek.
+		WebMvcLinkBuilder linkToCustomerPurchases = linkTo(methodOn(purchaseController.getClass()).retrievePurchases(customer.getId(), null, null));
+		model.add(linkToCustomerPurchases.withRel("customer-orders"));
 		return model;
 	}
 		

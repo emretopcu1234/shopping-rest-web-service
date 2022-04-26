@@ -22,7 +22,12 @@ public class CustomerRepository {
 	
 	public List<Customer> retrieveCustomers(String name, String country){
 		Query query = entityManager.createNamedQuery("retrieve_customers");
-		query.setParameter("name", name);
+		if(name == null) {
+			query.setParameter("name", null);
+		}
+		else {
+			query.setParameter("name", "%" + name + "%");
+		}
 		query.setParameter("country", country);
 		return (List<Customer>) query.getResultList();
 	}
