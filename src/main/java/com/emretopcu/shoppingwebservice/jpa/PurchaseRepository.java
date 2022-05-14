@@ -10,7 +10,6 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.emretopcu.shoppingwebservice.entity.Customer;
 import com.emretopcu.shoppingwebservice.entity.Purchase;
 
 @Repository

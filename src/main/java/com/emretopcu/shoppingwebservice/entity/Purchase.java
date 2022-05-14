@@ -24,7 +24,6 @@ public class Purchase {
 	private Timestamp timestamp;
 		
 	@Column(name="customer_id")
-	@Size(min=1, max=10, message="Customer id must have between 1-10 characters.")
 	private String customerId;
 	
 	public Purchase() {
@@ -32,8 +31,7 @@ public class Purchase {
 	}
 
 	public Purchase(@Size(min = 1, max = 10, message = "Id must have between 1-10 characters.") String id,
-			@Past(message = "Timestamp must be from the past.") Timestamp timestamp,
-			@Size(min = 1, max = 10, message = "Customer id must have between 1-10 characters.") String customerId) {
+			@Past(message = "Timestamp must be from the past.") Timestamp timestamp, String customerId) {
 		super();
 		this.id = id;
 		this.timestamp = timestamp;

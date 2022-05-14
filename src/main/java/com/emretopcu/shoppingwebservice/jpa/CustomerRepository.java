@@ -1,7 +1,6 @@
 package com.emretopcu.shoppingwebservice.jpa;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

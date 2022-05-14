@@ -26,7 +26,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.emretopcu.shoppingwebservice.controller.exception.ResourceNotFoundException;
 import com.emretopcu.shoppingwebservice.controller.exception.ResourceWithDuplicateIdException;
-import com.emretopcu.shoppingwebservice.entity.Customer;
 import com.emretopcu.shoppingwebservice.entity.Purchase;
 import com.emretopcu.shoppingwebservice.jpa.PurchaseRepository;
 

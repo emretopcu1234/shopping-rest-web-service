@@ -75,7 +75,7 @@ public class CustomerController {
 		return ResponseEntity.created(location).build();	// .created will return 201 response status which means successful create.
 	}
 	
-	@PutMapping("customers/{id}")
+	@PutMapping("/customers/{id}")
 	public void updateCustomer(@Valid @RequestBody Customer customer) {
 		Customer updatedCustomer = customerRepository.updateCustomer(customer);
 		if(updatedCustomer == null) {
